@@ -1,0 +1,63 @@
+—————————— Begin of SP ——————————
+
+if exists (select * from dbo.sysobjects where id = object_id(N’[dbo].[PURE_NAME]‘) and OBJECTPROPERTY(id, N’IsProcedure’) = 1)
+drop procedure [dbo].[PURE_NAME]
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_NULLS ON
+GO
+
+CREATE procedure PURE_NAME
+(
+@DirtyName varchar(255),
+@PN varchar(255) output
+)
+AS
+declare @I bigint ,
+@L bigint,
+@XN bigint,
+@S varchar(255) ,
+@X varchar(255),
+@PureName varchar(255)
+begin
+set @S = ”
+set @L = len(@DirtyName)
+set @I = 1
+while @I <= @L
+begin
+set @X = substring(@DirtyName,@I,1)
+set @XN = ascii(@X)
+--print @X
+--print @XN
+
+--if @XN = 199 then @X= char(199) --ا
+if @XN = 195 begin set @X= char(199) end --أ
+if @XN = 197 begin set @X= char(199) end --آ
+if @XN = 194 begin set @X= char(199) end --إ
+--if @XN = 237 begin set @X= char(237)end --ي
+if @XN = 236 begin set @X= char(237) end --ى
+--if @XN = 229 begin set @X= char(229)end --ه
+if @XN = 201 begin set @X= char(229)end --ة
+--if @XN = 32 begin set @X= char(32) end --space
+if @XN = 32 begin set @X= '' end -- no space
+
+set @S = @S + @X
+
+set @I = @I +1
+end
+set @PN = @S
+--print @PureName
+--return @PureName
+end
+
+GO
+SET QUOTED_IDENTIFIER OFF
+GO
+SET ANSI_NULLS ON
+GO
+
+------------------------------ End of SP ------------------------------
+
+
